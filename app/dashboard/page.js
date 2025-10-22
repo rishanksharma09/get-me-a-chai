@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
     const { data: session } = useSession();
+    const [oldusername, setOldUsername] = useState("");
+    const [newusername, setNewUsername] = useState("");
 
     const [formData, setFormData] = useState({
         name: "",
@@ -17,8 +19,7 @@ export default function Dashboard() {
     const fetchData = async () => {
         const userData = await getuser(session.user.email);
         setFormData(userData);
-        console.log(userData);
-
+        setOldUsername(userData.username);
     };
 
     useEffect(() => {
@@ -51,7 +52,7 @@ export default function Dashboard() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ formData }),
+                body: JSON.stringify({ formData, oldusername }),
             });
 
             const data = await response.json();
@@ -61,6 +62,8 @@ export default function Dashboard() {
                 alert(data.error || "Failed to update user");
                 return;
             }
+
+
 
             console.log("Form Data Submitted:", formData);
             alert(data.message || "User updated successfully");

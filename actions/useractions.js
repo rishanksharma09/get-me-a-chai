@@ -1,5 +1,5 @@
 "use server"
-import payments from "@/models/Payment";
+import Payment from "@/models/Payment";
 import Razorpay from "razorpay";
 import { use } from "react";
 import User from "@/models/User";
@@ -21,7 +21,7 @@ export const createOrder = async (amount,to_username,from_username,name,message)
         key2: "value2"
       }
     });
-    await payments.create({
+    await Payment.create({
       oid: order.id,
       toUser: to_username,
       fromUser: from_username,
@@ -39,12 +39,13 @@ export const createOrder = async (amount,to_username,from_username,name,message)
 
 
 export const fetchmessages = async (username) => {
-  const response = await payments.find({ status: true, toUser: username }).sort({ amount: -1 });
+  const response = await Payment.find({ status: true , toUser: username }).sort({ amount: -1 });
   const data = response.map((item) => ({
     name: item.name,
     message: item.message,
     amount: item.amount
   }));
+  console.log(username);
   return data;
 }
 
@@ -52,6 +53,18 @@ export const fetchmessages = async (username) => {
 export const getuser= async (email) => {
   await connectDB();
   const response = await User.findOne({email:email});
+  const data = {
+    name: response.name,
+    email: response.email,
+    username: response.username,
+    razorpayId: response.razorpayid,
+    razorpaySecret: response.razorpaysecret
+  };
+  return data;
+}
+export const getuserfromusername= async (username) => {
+  await connectDB();
+  const response = await User.findOne({username:username});
   const data = {
     name: response.name,
     email: response.email,

@@ -80,22 +80,22 @@ var rzp1 = new window.Razorpay(options);
     rzp1.open();
     }
     const [messages,setMessages]=useState([]);
-    React.useEffect(()=>{
-      const getmessages=async()=>{
-      let messages = await fetchmessages(user.username);
-      setMessages(messages);
-    }
-      getmessages();
+    useEffect(()=>{
+      
+     
+      
     },[]);
     
     
     const [user,setUser]=useState({});
     useEffect(() => {
-      const fetchuser = async () => {
+      const fetchuserandmessages = async () => {
         const userData = await getuser(session.user.email);
         setUser(userData);
+        const messages = await fetchmessages(userData.username);
+        setMessages(messages);
       }
-      fetchuser();
+       fetchuserandmessages();
 
     }, [session]);
 
