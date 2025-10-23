@@ -5,7 +5,7 @@ import PaymentPage from '../../components/PaymentPage'
 import { getuserfromusername } from '@/actions/useractions'
 import NoUser from '../../components/NoUser'
 
-const page = () => {
+const Page = () => {
   const params = useParams()
   const [userData, setUserData] = useState(null)
   useEffect(() => {
@@ -23,4 +23,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

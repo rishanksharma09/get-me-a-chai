@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {createuser} from '@/actions/useractions'
 
 
-const page = () => {
+const Page = () => {
     const router = useRouter();
     const { data: session } = useSession();
     if(session){
@@ -44,4 +44,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page

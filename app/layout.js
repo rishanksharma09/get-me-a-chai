@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { SessionProvider } from "next-auth/react"
 import SessionWrapper from "./components/SessionWrapper";
+import Script from "next/script";
 
 
 const geistSans = Geist({
@@ -35,7 +36,7 @@ export default function RootLayout({ children }) {
           <main className="min-h-screen relative ">{children}</main>
         </div>
         <Footer></Footer>
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        <Script src="https://cdn.lordicon.com/lordicon.js"></Script>
         </SessionWrapper>
       </body >
     </html >
