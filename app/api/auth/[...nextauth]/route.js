@@ -12,7 +12,7 @@ const handler = NextAuth({
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
-  debug: true,
+
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (account.provider == "github") {
