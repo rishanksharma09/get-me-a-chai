@@ -2,20 +2,33 @@ import {connectDB} from '@/lib/mongodb';
 import Payment from '@/models/Payment';
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
+import { getrazorpaydetails } from '@/actions/useractions';
 
 export async function POST(request) {
   try {
     await connectDB();
 
-   const body = await request.formData();
-
+    
+    const body = await request.formData();
+    
     const razorpay_payment_id = body.get("razorpay_payment_id");
     const razorpay_order_id = body.get("razorpay_order_id");
     const razorpay_signature = body.get("razorpay_signature");
+    
+    const payment = await Payment.findOne({ oid: razorpay_order_id });
+    if(!payment) {
+      return new Response(
+        JSON.stringify({ error: 'Payment record not found.' }),
+        { status: 404 }
+      );
+    }
+    
+    const razorpayDetails = await getrazorpaydetails(payment.toUser);
+    
 
     // ✅ Generate signature using Node crypto
     const generated_signature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET) // use server secret
+      .createHmac('sha256', razorpayDetails.razorpaySecret) // use server secret
       .update(razorpay_order_id + '|' + razorpay_payment_id)
       .digest('hex');
 
@@ -25,7 +38,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    const payment = await Payment.findOne({ oid: razorpay_order_id });
+    
     if (payment) {
     // ✅ Update payment record
     await Payment.findOneAndUpdate(

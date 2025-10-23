@@ -2,6 +2,7 @@
 import { signIn,useSession } from 'next-auth/react'
 import React from 'react'
 import { useRouter } from 'next/navigation'
+import {createuser} from '@/actions/useractions'
 
 
 const page = () => {
@@ -9,6 +10,8 @@ const page = () => {
     const { data: session } = useSession();
     if(session){
         router.push('/');
+        createuser(session.user.name,session.user.email,session.user.name.replace(/\s+/g, '').toLowerCase());
+
     }
     return (
         

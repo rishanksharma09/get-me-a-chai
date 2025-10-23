@@ -13,11 +13,13 @@ export default function Dashboard() {
         name: "",
         email: "",
         username: "",
+        bio: "",
         razorpayId: "",
         razorpaySecret: "",
     });
     const fetchData = async () => {
         const userData = await getuser(session.user.email);
+        console.log(userData);
         setFormData(userData);
         setOldUsername(userData.username);
     };
@@ -47,6 +49,7 @@ export default function Dashboard() {
         e.preventDefault();
 
         try {
+            console.log("Submitting form data:", formData);
             const response = await fetch("/api/updateuser", {
                 method: "PUT",
                 headers: {
@@ -108,7 +111,7 @@ export default function Dashboard() {
                     <input
                         type="email"
                         name="email"
-                        value={formData.email}
+                        value={session?.user?.email}
                         onChange={() => { alert("Cannot change email") }}
                         className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
                         required
@@ -124,6 +127,19 @@ export default function Dashboard() {
                         type="text"
                         name="username"
                         value={formData.username}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                        required
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Bio
+                    </label>
+                    <input
+                        type="text"
+                        name="bio"
+                        value={formData.bio || ""}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
                         required

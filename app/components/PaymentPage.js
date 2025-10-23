@@ -3,7 +3,7 @@
 import Script from 'next/script';
 import React, { use } from 'react'
 import { useState,useEffect} from 'react';
-import { createOrder } from '@/actions/useractions';
+import { createOrder, getrazorpaydetails, getuserfromusername } from '@/actions/useractions';
 import { fetchmessages } from '@/actions/useractions';
 import { get, set } from 'mongoose';
 import { getuser } from '@/actions/useractions';
@@ -52,9 +52,16 @@ const PaymentPage = ({ username }) => {
       }
 
     const handlePayment = async (amount, orderId) => {
+
+      const razorpayDetails = await getrazorpaydetails(username);
+
+      if (!razorpayDetails.razorpayId || !razorpayDetails.razorpaySecret) {
+        throw new Error("Razorpay details not found.");
+      }
+
         // Payment handling logic
         var options = {
-    "key" : process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+    "key" : razorpayDetails.razorpayId, // Enter the Key ID generated from the Dashboard
     "amount": Number(amount)*100, // Amount is in currency subunits. 
     "currency": "INR",
     "name": "Get me a Chai", //your business name
@@ -90,7 +97,7 @@ var rzp1 = new window.Razorpay(options);
     const [user,setUser]=useState({});
     useEffect(() => {
       const fetchuserandmessages = async () => {
-        const userData = await getuser(session.user.email);
+        const userData = await getuserfromusername(username);
         setUser(userData);
         const messages = await fetchmessages(userData.username);
         setMessages(messages);
@@ -104,17 +111,18 @@ var rzp1 = new window.Razorpay(options);
       <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
 
     <div >
-      <div className="border border-amber-50 h-[30vh] overflow-hidden relative">
-        <img className='w-full h-full object-cover object-center' src="https://thumbs.dreamstime.com/b/banner-photos-rome-horizontal-cover-article-traveling-around-world-collage-images-sights-italy-184323448.jpg?w=1400" alt="" />
+      <div className=" h-[33vh] overflow-hidden relative">
+        <img className='w-full h-full object-cover object-center' src="/cover.jpg" alt="" />
       </div>
       <div>
-        <div className='border border-amber-50 w-32 h-32 rounded-full overflow-hidden absolute top-48 left-[46%] '>
-          <img className='w-full h-full object-cover object-center' src="https://i.pinimg.com/1200x/41/b7/11/41b7116ed040864dd32c7b09e4ba536e.jpg" alt="" />
+        <div className=' w-32 h-32 rounded-full overflow-hidden absolute top-48 left-[46%] '>
+          <img className='w-full h-full object-cover object-center' src="/placeholder-headshot.png" alt="" />
         </div>
-        <div className='mt-24 flex flex-col gap-1  justify-center text-center text-white '>
+        <div className='mt-17 flex flex-col  justify-center text-center text-white '>
           <h2 className='text-lg font-bold'>@{user.username} </h2>
-          <p className='text-gray-500'>Creating animated art for people</p>
-          <p className='text-gray-500'>69k members . 69 posts . $69/release</p>
+          <p className='text-gray-500'>{user.bio}</p>
+          <p className='text-gray-500'>{messages.length} supporters</p>
+          <p className='text-gray-500'>{user.name} has raised ₹{messages.reduce((acc, item) => acc + Number(item.amount), 0).toLocaleString("en-IN")} till now</p>
         </div>
         <div className='flex justify-center my-12 gap-9 text-white'>
           <div className='w-[35vw] h-[30vh] bg-slate-900 p-4 pb-6 overflow-y-scroll '>
@@ -124,7 +132,7 @@ var rzp1 = new window.Razorpay(options);
 
 
             <div className='ml-3 flex flex-col gap-1 '>
-
+              {!messages.length&&<p>No supporters yet. Be the first one to support!</p>}
               {messages.map((item)=>
               <div className='flex gap-1 items-center '>
                 <div className='rounded-full w-[40px] h-[40px] overflow-hidden'>
@@ -135,7 +143,7 @@ var rzp1 = new window.Razorpay(options);
                     style={{ width: "30px", height: "30px" }}>
                   </lord-icon>
                 </div>
-                <p>{item.name} donated Rs.{item.amount} with a message "{item.message}"</p>
+                <p>{item.name} donated ₹{item.amount.toLocaleString("en-IN")} with a message "{item.message}"</p>
               </div>)}
   
               

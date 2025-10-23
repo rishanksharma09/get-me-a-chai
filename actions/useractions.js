@@ -5,13 +5,24 @@ import { use } from "react";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 
-const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+
+
+
+
 
 export const createOrder = async (amount,to_username,from_username,name,message) => {
   try {
+    const razorpayDetails = await getrazorpaydetails(to_username);
+    if (!razorpayDetails.razorpayId || !razorpayDetails.razorpaySecret) {
+      throw new Error("Recipient has not set up Razorpay details.");
+    }
+
+
+    const razorpay = new Razorpay({
+      key_id: razorpayDetails.razorpayId,
+      key_secret: razorpayDetails.razorpaySecret
+    });
+
     const order = await razorpay.orders.create({
       amount:Number(amount)*100,
       currency: "INR",
@@ -57,6 +68,7 @@ export const getuser= async (email) => {
     name: response.name,
     email: response.email,
     username: response.username,
+    bio: response.bio,
     razorpayId: response.razorpayid,
     razorpaySecret: response.razorpaysecret
   };
@@ -69,8 +81,35 @@ export const getuserfromusername= async (username) => {
     name: response.name,
     email: response.email,
     username: response.username,
+    bio: response.bio,
     razorpayId: response.razorpayid,
     razorpaySecret: response.razorpaysecret
   };
   return data;
 }
+export const getrazorpaydetails= async (username) => {
+  await connectDB();
+  const response = await User.findOne({username:username});
+  const data = {
+    razorpayId: response.razorpayid,
+    razorpaySecret: response.razorpaysecret
+  };
+  return data;
+}
+//put username email and name in db for first time login
+export const createuser= async (name, email, username) => {
+  await connectDB();
+  const existingUser = await User.findOne({email: email});
+  if (existingUser) {
+    return;
+  } else {
+    const newUser = new User({
+      name: name,
+      email: email,
+      username: username,
+      bio: "",
+      razorpayid: "",
+      razorpaysecret: ""
+    });
+    await newUser.save();
+  }}
