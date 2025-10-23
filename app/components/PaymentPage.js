@@ -134,7 +134,7 @@ var rzp1 = new window.Razorpay(options);
             <div className='ml-3 flex flex-col gap-1 '>
               {!messages.length&&<p>No supporters yet. Be the first one to support!</p>}
               {messages.map((item)=>
-              <div className='flex gap-1 items-center '>
+              <div key={item._id} className='flex gap-1 items-center '>
                 <div className='rounded-full w-[40px] h-[40px] overflow-hidden'>
                   <lord-icon
                     src="https://cdn.lordicon.com/hroklero.json"
@@ -143,7 +143,7 @@ var rzp1 = new window.Razorpay(options);
                     style={{ width: "30px", height: "30px" }}>
                   </lord-icon>
                 </div>
-                <p>{item.name} donated ₹{item.amount.toLocaleString("en-IN")} with a message "{item.message}"</p>
+                <p>{item.name} donated ₹{item.amount.toLocaleString("en-IN")} with a message &quot;{item.message}&quot;</p>
               </div>)}
   
               
