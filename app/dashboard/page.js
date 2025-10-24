@@ -4,9 +4,11 @@ import { getuser, updateuser } from "@/actions/useractions";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import NoLogin from '../components/NoLogin';
+import { toast, Bounce } from 'react-toastify';
+
 export default function Dashboard() {
 
-    
+
 
     const { data: session } = useSession();
     const [oldusername, setOldUsername] = useState("");
@@ -65,158 +67,201 @@ export default function Dashboard() {
             const data = await response.json();
 
             if (!response.ok) {
-                console.error("Update failed:", data.error);
-                alert(data.error || "Failed to update user");
+
+                toast.error(data.error || "Failed to update user", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+
                 return;
             }
 
 
 
             console.log("Form Data Submitted:", formData);
-            alert(data.message || "User updated successfully");
+
+            toast.success(data.message || 'User updated successfully!', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
 
         } catch (error) {
-            console.error("Error updating user:", error);
-            alert("An unexpected error occurred. Please try again.");
+            toast.error("An unexpected error occurred. Please try again.", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
         }
     };
 
 
     return (
         !session ? <NoLogin /> : (
-        <div className="min-h-screen py-24 flex items-center justify-center px-4">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white dark:bg-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-lg space-y-6"
-            >
-                <h2 className="text-2xl font-bold text-center text-slate-800 dark:text-white">
-                    Dashboard Settings
-                </h2>
+            <div className="min-h-screen py-24 flex items-center justify-center px-4">
+                <form
+                    onSubmit={handleSubmit}
+                    className="bg-white dark:bg-slate-800 shadow-lg rounded-2xl p-8 w-full max-w-lg space-y-6"
+                >
+                    <h2 className="text-2xl font-bold text-center text-slate-800 dark:text-white">
+                        Dashboard Settings
+                    </h2>
 
-                {/* Name */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Name
-                    </label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
-                        required
-                    />
-                </div>
+                    {/* Name */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Name
+                        </label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                            required
+                        />
+                    </div>
 
-                {/* Email */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={session?.user?.email}
-                        onChange={() => { alert("Cannot change email") }}
-                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
-                        required
-                    />
-                </div>
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={session?.user?.email}
+                            onChange={() => {
+                                toast.warn('Cannot change email', {
+                                    position: "bottom-right",
+                                    autoClose: 5000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: true,
+                                    draggable: true,
+                                    progress: undefined,
+                                    theme: "dark",
+                                    transition: Bounce,
+                                });
+                            }}
+                            className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                            required
+                        />
+                    </div>
 
-                {/* Username */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Username
-                    </label>
-                    <input
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Bio
-                    </label>
-                    <input
-                        type="text"
-                        name="bio"
-                        value={formData.bio || ""}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
-                        required
-                    />
-                </div>
+                    {/* Username */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Username
+                        </label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Bio
+                        </label>
+                        <input
+                            type="text"
+                            name="bio"
+                            value={formData.bio || ""}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                            required
+                        />
+                    </div>
 
-                {/* Profile Picture */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Profile Picture
-                    </label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(e, "profile")}
-                        className="mt-1 block w-full text-slate-700 dark:text-slate-300"
-                    />
-                </div>
+                    {/* Profile Picture */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Profile Picture
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, "profile")}
+                            className="mt-1 block w-full text-slate-700 dark:text-slate-300"
+                        />
+                    </div>
 
-                {/* Cover Picture */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Cover Picture
-                    </label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(e, "cover")}
-                        className="mt-1 block w-full text-slate-700 dark:text-slate-300"
-                    />
-                </div>
+                    {/* Cover Picture */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Cover Picture
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, "cover")}
+                            className="mt-1 block w-full text-slate-700 dark:text-slate-300"
+                        />
+                    </div>
 
-                {/* Razorpay ID */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Razorpay ID
-                    </label>
-                    <input
-                        type="text"
-                        name="razorpayId"
-                        value={formData.razorpayId || ""}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
-                        required
-                    />
-                </div>
+                    {/* Razorpay ID */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Razorpay ID
+                        </label>
+                        <input
+                            type="text"
+                            name="razorpayId"
+                            value={formData.razorpayId || ""}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                            required
+                        />
+                    </div>
 
-                {/* Razorpay Secret */}
-                <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Razorpay Secret
-                    </label>
-                    <input
-                        type="password"
-                        name="razorpaySecret"
-                        value={formData.razorpaySecret || ""}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
-                        required
-                    />
-                </div>
+                    {/* Razorpay Secret */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Razorpay Secret
+                        </label>
+                        <input
+                            type="password"
+                            name="razorpaySecret"
+                            value={formData.razorpaySecret || ""}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 p-2 text-slate-900 dark:text-white"
+                            required
+                        />
+                    </div>
 
-                {/* Submit */}
-                <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        className="w-fit px-3   bg-gradient-to-r from-green-400 to-blue-600 text-white py-2 rounded-lg font-medium hover:opacity-80"
-                    >
-                        Save Settings
-                    </button>
-                </div>
-            </form>
-        </div>)
+                    {/* Submit */}
+                    <div className="flex justify-center">
+                        <button
+                            type="submit"
+                            className="w-fit px-3 bg-gradient-to-r from-green-400 to-blue-600 text-white py-2 rounded-lg font-medium hover:opacity-80"
+                        >
+                            Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>)
     );
 }
