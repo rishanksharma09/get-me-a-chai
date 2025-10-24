@@ -12,9 +12,6 @@ export default function Dashboard() {
     const [oldusername, setOldUsername] = useState("");
     const [newusername, setNewUsername] = useState("");
 
-  if(!session){
-    return <NoLogin/>
-  }
 
     const [formData, setFormData] = useState({
         name: "",
@@ -86,6 +83,7 @@ export default function Dashboard() {
 
 
     return (
+        !session ? <NoLogin /> : (
         <div className="min-h-screen py-24 flex items-center justify-center px-4">
             <form
                 onSubmit={handleSubmit}
@@ -219,6 +217,6 @@ export default function Dashboard() {
                     </button>
                 </div>
             </form>
-        </div>
+        </div>)
     );
 }
