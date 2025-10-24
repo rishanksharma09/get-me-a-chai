@@ -4,8 +4,12 @@ import { useParams } from 'next/navigation'
 import PaymentPage from '../../components/PaymentPage'
 import { getuserfromusername } from '@/actions/useractions'
 import NoUser from '../../components/NoUser'
+import NoLogin from '../../components/NoLogin'
+import { useSession } from 'next-auth/react'
 
 const Page = () => {
+  const { data: session } = useSession();
+  
   const params = useParams()
   const [userData, setUserData] = useState(null)
   useEffect(() => {
@@ -16,10 +20,15 @@ const Page = () => {
     fetchUserData()
   }, [params.username])
   return (
-    <div>
-      {userData && <PaymentPage username={params.username} />}
-      {!userData && <NoUser />}
-    </div>
+    <>
+    {!session && <NoLogin />}
+      {session && (
+        <div>
+          {userData && <PaymentPage username={params.username} />}
+          {!userData && <NoUser />}
+        </div>
+      )}
+    </>
   )
 }
 

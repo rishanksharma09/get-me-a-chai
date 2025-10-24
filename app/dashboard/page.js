@@ -3,11 +3,18 @@ import { use, useState } from "react";
 import { getuser, updateuser } from "@/actions/useractions";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-
+import NoLogin from '../components/NoLogin';
 export default function Dashboard() {
+
+    
+
     const { data: session } = useSession();
     const [oldusername, setOldUsername] = useState("");
     const [newusername, setNewUsername] = useState("");
+
+  if(!session){
+    return <NoLogin/>
+  }
 
     const [formData, setFormData] = useState({
         name: "",
