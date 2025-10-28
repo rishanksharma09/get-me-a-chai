@@ -78,6 +78,9 @@ export const getuser= async (email) => {
 export const getuserfromusername= async (username) => {
   await connectDB();
   const response = await User.findOne({username:username});
+  if (!response) {
+    return null;
+  }
   const data = {
     name: response.name,
     email: response.email,

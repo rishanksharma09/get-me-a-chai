@@ -9,9 +9,11 @@ import { get, set } from 'mongoose';
 import { getuser } from '@/actions/useractions';
 import { useSession } from 'next-auth/react';
 import { toast, Bounce } from 'react-toastify';
+import Loading from './Loading';
 
 
 const PaymentPage = ({ username }) => {
+  const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
   const [client, setClient] = useState({ name: "", amount: "", message: "" });
   const handleName = (e) => {
@@ -51,6 +53,8 @@ const PaymentPage = ({ username }) => {
       });
       return;
     }
+    
+    setLoading(true);
     const updatedClient = {
       name: client.name || "Anonymous",
       amount: client.amount,
@@ -60,6 +64,7 @@ const PaymentPage = ({ username }) => {
     const order = await createOrder(updatedClient.amount, username, session.user.email, updatedClient.name, updatedClient.message);
     await handlePayment(updatedClient.amount, order.id);
     setClient({ name: "", amount: "", message: "" })
+    
   }
 
   const handlePayment = async (amount, orderId) => {
@@ -95,6 +100,7 @@ const PaymentPage = ({ username }) => {
     };
 
     var rzp1 = new window.Razorpay(options);
+    setLoading(false);
     rzp1.open();
   }
   const [messages, setMessages] = useState([]);
@@ -107,6 +113,7 @@ const PaymentPage = ({ username }) => {
 
   const [user, setUser] = useState({});
   useEffect(() => {
+    
     const fetchuserandmessages = async () => {
       const userData = await getuserfromusername(username);
       setUser(userData);
@@ -114,14 +121,14 @@ const PaymentPage = ({ username }) => {
       setMessages(messages);
     }
     fetchuserandmessages();
+    
 
   }, [session]);
 
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
-
-      <div >
+      {loading?<Loading />:<div >
         <div className=" h-[33vh] overflow-hidden relative">
           <img className='w-full h-full object-cover object-center' src="/cover.jpg" alt="" />
         </div>
@@ -198,7 +205,8 @@ const PaymentPage = ({ username }) => {
             </div>
           </div>
         </div >
-      </div>
+      </div> }
+      
 
 
 
